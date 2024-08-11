@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>TextBin Extension Options</title>
+        <link rel="stylesheet" href="options.css" />
+    </head>
+    <body>
+        <div class="container">
+            <h1>TextBin Extension Options</h1>
+            <form id="optionsForm">
+                <div class="form-group">
+                    <label for="defaultExpiry">Default Expiry Time:</label>
+                    <select id="defaultExpiry" name="defaultExpiry">
+                        <option value="1h">1 Hour</option>
+                        <option value="1d">1 Day</option>
+                        <option value="1w">1 Week</option>
+                        <option value="1m">1 Month</option>
+                        <option value="never">Never</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="defaultPrivate">
+                        <input
+                            type="checkbox"
+                            id="defaultPrivate"
+                            name="defaultPrivate"
+                        />
+                        Make pastes private by default
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="showNotifications">
+                        <input
+                            type="checkbox"
+                            id="showNotifications"
+                            name="showNotifications"
+                        />
+                        Show desktop notifications
+                    </label>
+                </div>
+                <button type="submit">Save Options</button>
+            </form>
+            <div id="status"></div>
+        </div>
+        <script src="options.js"></script>
+    </body>
+</html>

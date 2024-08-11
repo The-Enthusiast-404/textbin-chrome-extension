@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>TextBin Extension</title>
+        <link rel="stylesheet" href="popup.css" />
+    </head>
+    <body>
+        <div id="app">
+            <header>
+                <h1>TextBin</h1>
+                <div id="userInfo"></div>
+            </header>
+            <div id="signInForm" style="display: none">
+                <h2>Sign In</h2>
+                <form id="loginForm">
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Email"
+                        required
+                    />
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Password"
+                        required
+                    />
+                    <button type="submit">Sign In</button>
+                </form>
+                <p id="signInError" style="color: red"></p>
+            </div>
+            <div id="mainContent" style="display: none">
+                <nav>
+                    <button id="newPasteBtn">New Paste</button>
+                    <button id="viewProfileBtn">Profile</button>
+                    <button id="toggleThemeBtn">Toggle Theme</button>
+                    <button id="signOutBtn">Sign Out</button>
+                </nav>
+                <main>
+                    <section id="newPasteForm" style="display: none">
+                        <h2>Create New Paste</h2>
+                        <form id="pasteForm">
+                            <input
+                                type="text"
+                                id="pasteTitle"
+                                placeholder="Title"
+                                required
+                            />
+                            <textarea
+                                id="pasteContent"
+                                placeholder="Paste content here..."
+                                required
+                            ></textarea>
+                            <select id="pasteFormat" required>
+                                <option value="">Select format</option>
+                                <option value="plaintext">Plain Text</option>
+                                <option value="golang">Go</option>
+                                <option value="php">PHP</option>
+                                <!-- Add more language options here -->
+                            </select>
+                            <input
+                                type="number"
+                                id="expiryValue"
+                                placeholder="Expiry value"
+                                required
+                            />
+                            <select id="expiryUnit" required>
+                                <option value="minutes">Minutes</option>
+                                <option value="hours">Hours</option>
+                                <option value="days">Days</option>
+                                <option value="weeks">Weeks</option>
+                                <option value="months">Months</option>
+                            </select>
+                            <input
+                                type="password"
+                                id="encryptionKey"
+                                placeholder="Encryption key"
+                                required
+                            />
+                            <label>
+                                <input type="checkbox" id="isPrivate" />
+                                Private paste
+                            </label>
+                            <button type="submit">Create Paste</button>
+                        </form>
+                    </section>
+                    <section id="recentPastes">
+                        <h2>Recent Pastes</h2>
+                        <ul id="pasteList"></ul>
+                    </section>
+                    <section id="pasteDetails" style="display: none">
+                        <!-- Paste details will be dynamically inserted here -->
+                    </section>
+                </main>
+            </div>
+            <footer>
+                <p>TextBin Extension v1.0</p>
+            </footer>
+        </div>
+        <script src="popup.js"></script>
+    </body>
+</html>
