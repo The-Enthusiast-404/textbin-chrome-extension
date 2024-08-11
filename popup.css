@@ -1,72 +1,100 @@
+:root {
+    --primary-color: #4a90e2;
+    --secondary-color: #f5a623;
+    --background-color: #ffffff;
+    --text-color: #333333;
+    --border-color: #e0e0e0;
+}
+
 body {
+    font-family: "Roboto", sans-serif;
     width: 350px;
-    font-family: Arial, sans-serif;
     margin: 0;
-    padding: 10px;
-    background-color: #f4f4f4;
-    color: #333;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
     transition: all 0.3s ease;
 }
 
 .dark-theme {
-    background-color: #333;
-    color: #f4f4f4;
+    --primary-color: #64b5f6;
+    --secondary-color: #ffd54f;
+    --background-color: #263238;
+    --text-color: #ffffff;
+    --border-color: #4f5b62;
 }
 
 #app {
     display: flex;
     flex-direction: column;
-    min-height: 400px;
+    min-height: 500px;
 }
 
 header {
-    background-color: #4caf50;
+    background-color: var(--primary-color);
     color: white;
-    padding: 10px;
+    padding: 15px;
     text-align: center;
 }
 
-h1,
-h2 {
+h1 {
     margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+}
+
+h2 {
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 15px;
 }
 
 nav {
     display: flex;
     justify-content: space-around;
-    margin: 10px 0;
+    padding: 10px;
+    background-color: var(--background-color);
+    border-bottom: 1px solid var(--border-color);
 }
 
-button {
+.btn {
     padding: 8px 15px;
-    background-color: #4caf50;
-    color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
     transition: background-color 0.3s ease;
 }
 
-button:hover {
-    background-color: #45a049;
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
 }
 
-main {
-    flex-grow: 1;
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
 }
 
-form {
-    display: flex;
-    flex-direction: column;
+.btn:hover {
+    opacity: 0.9;
+}
+
+.form-container {
+    padding: 20px;
 }
 
 input,
 textarea,
 select {
-    margin-bottom: 10px;
+    width: 100%;
     padding: 8px;
-    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 textarea {
@@ -74,47 +102,53 @@ textarea {
     resize: vertical;
 }
 
-#pasteList {
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.form-row > * {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.form-row > *:last-child {
+    margin-right: 0;
+}
+
+#userTexts {
+    padding: 20px;
+}
+
+#userTexts ul {
     list-style-type: none;
     padding: 0;
 }
 
-#pasteList li {
-    margin-bottom: 5px;
+#userTexts li {
+    margin-bottom: 10px;
 }
 
-#pasteList a {
-    color: #1a73e8;
+#userTexts a {
+    color: var(--primary-color);
     text-decoration: none;
 }
 
-#pasteList a:hover {
+#userTexts a:hover {
     text-decoration: underline;
+}
+
+.error-message {
+    color: #ff3860;
+    font-size: 14px;
+    margin-top: 10px;
 }
 
 footer {
     text-align: center;
     padding: 10px;
-    background-color: #4caf50;
-    color: white;
-}
-
-.dark-theme button {
-    background-color: #45a049;
-}
-
-.dark-theme button:hover {
-    background-color: #3d8b3d;
-}
-
-.dark-theme input,
-.dark-theme textarea,
-.dark-theme select {
-    background-color: #444;
-    color: #f4f4f4;
-    border-color: #555;
-}
-
-.dark-theme #pasteList a {
-    color: #64b5f6;
+    background-color: var(--background-color);
+    border-top: 1px solid var(--border-color);
+    font-size: 12px;
 }

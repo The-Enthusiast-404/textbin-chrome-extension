@@ -5,6 +5,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>TextBin Extension</title>
         <link rel="stylesheet" href="popup.css" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+            rel="stylesheet"
+        />
     </head>
     <body>
         <div id="app">
@@ -12,7 +16,8 @@
                 <h1>TextBin</h1>
                 <div id="userInfo"></div>
             </header>
-            <div id="signInForm" style="display: none">
+
+            <div id="signInForm" class="form-container">
                 <h2>Sign In</h2>
                 <form id="loginForm">
                     <input
@@ -27,32 +32,41 @@
                         placeholder="Password"
                         required
                     />
-                    <button type="submit">Sign In</button>
+                    <button type="submit" class="btn btn-primary">
+                        Sign In
+                    </button>
                 </form>
-                <p id="signInError" style="color: red"></p>
+                <p id="signInError" class="error-message"></p>
             </div>
-            <div id="mainContent" style="display: none">
+
+            <div id="mainContent">
                 <nav>
-                    <button id="newPasteBtn">New Paste</button>
-                    <button id="viewProfileBtn">Profile</button>
-                    <button id="toggleThemeBtn">Toggle Theme</button>
-                    <button id="signOutBtn">Sign Out</button>
+                    <button id="newPasteBtn" class="btn btn-secondary">
+                        New Paste
+                    </button>
+                    <button id="toggleThemeBtn" class="btn btn-secondary">
+                        Toggle Theme
+                    </button>
+                    <button id="signOutBtn" class="btn btn-secondary">
+                        Sign Out
+                    </button>
                 </nav>
-                <main>
-                    <section id="newPasteForm" style="display: none">
-                        <h2>Create New Paste</h2>
-                        <form id="pasteForm">
-                            <input
-                                type="text"
-                                id="pasteTitle"
-                                placeholder="Title"
-                                required
-                            />
-                            <textarea
-                                id="pasteContent"
-                                placeholder="Paste content here..."
-                                required
-                            ></textarea>
+
+                <section id="newPasteForm" class="form-container">
+                    <h2>Create New Paste</h2>
+                    <form id="pasteForm">
+                        <input
+                            type="text"
+                            id="pasteTitle"
+                            placeholder="Title"
+                            required
+                        />
+                        <textarea
+                            id="pasteContent"
+                            placeholder="Paste content here..."
+                            required
+                        ></textarea>
+                        <div class="form-row">
                             <select id="pasteFormat" required>
                                 <option value="">Select format</option>
                                 <option value="plaintext">Plain Text</option>
@@ -73,28 +87,30 @@
                                 <option value="weeks">Weeks</option>
                                 <option value="months">Months</option>
                             </select>
-                            <input
-                                type="password"
-                                id="encryptionKey"
-                                placeholder="Encryption key"
-                                required
-                            />
+                        </div>
+                        <input
+                            type="password"
+                            id="encryptionKey"
+                            placeholder="Encryption key"
+                            required
+                        />
+                        <div class="form-row">
                             <label>
                                 <input type="checkbox" id="isPrivate" />
                                 Private paste
                             </label>
-                            <button type="submit">Create Paste</button>
-                        </form>
-                    </section>
-                    <section id="recentPastes">
-                        <h2>Recent Pastes</h2>
-                        <ul id="pasteList"></ul>
-                    </section>
-                    <section id="pasteDetails" style="display: none">
-                        <!-- Paste details will be dynamically inserted here -->
-                    </section>
-                </main>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            Create Paste
+                        </button>
+                    </form>
+                </section>
+
+                <section id="userTexts">
+                    <!-- User texts will be dynamically inserted here -->
+                </section>
             </div>
+
             <footer>
                 <p>TextBin Extension v1.0</p>
             </footer>

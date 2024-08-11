@@ -1,11 +1,11 @@
 const API_BASE_URL = "https://textbin.theenthusiast.dev/v1";
+const WEB_APP_URL = "https://app.textbin.theenthusiast.dev";
 
 document.addEventListener("DOMContentLoaded", function () {
   const loginForm = document.getElementById("loginForm");
   const signInForm = document.getElementById("signInForm");
   const mainContent = document.getElementById("mainContent");
   const newPasteBtn = document.getElementById("newPasteBtn");
-  const viewProfileBtn = document.getElementById("viewProfileBtn");
   const toggleThemeBtn = document.getElementById("toggleThemeBtn");
   const signOutBtn = document.getElementById("signOutBtn");
   const pasteForm = document.getElementById("pasteForm");
@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   loginForm.addEventListener("submit", handleSignIn);
   newPasteBtn.addEventListener("click", showNewPasteForm);
-  viewProfileBtn.addEventListener("click", viewProfile);
   toggleThemeBtn.addEventListener("click", toggleTheme);
   signOutBtn.addEventListener("click", handleSignOut);
   pasteForm.addEventListener("submit", handleNewPaste);
@@ -26,8 +25,7 @@ async function checkAuthStatus() {
   const token = await getAuthToken();
   if (token) {
     showMainContent();
-    loadUserInfo();
-    loadRecentPastes();
+    loadUserData();
   } else {
     showSignInForm();
   }
@@ -42,12 +40,12 @@ function showMainContent() {
   document.getElementById("signInForm").style.display = "none";
   document.getElementById("mainContent").style.display = "block";
   document.getElementById("newPasteForm").style.display = "none";
-  document.getElementById("recentPastes").style.display = "block";
+  document.getElementById("userTexts").style.display = "block";
 }
 
 function showNewPasteForm() {
   document.getElementById("newPasteForm").style.display = "block";
-  document.getElementById("recentPastes").style.display = "none";
+  document.getElementById("userTexts").style.display = "none";
 }
 
 async function handleSignIn(e) {
@@ -69,9 +67,9 @@ async function handleSignIn(e) {
 
     const token = response.data.authentication_token.token;
     await setAuthToken(token);
+    await setUserEmail(email);
     showMainContent();
-    loadUserInfo();
-    loadRecentPastes();
+    loadUserData();
   } catch (error) {
     console.error("Sign in error:", error);
     document.getElementById("signInError").textContent =
@@ -81,12 +79,13 @@ async function handleSignIn(e) {
 
 async function handleSignOut() {
   await setAuthToken(null);
+  await setUserEmail(null);
   showSignInForm();
   document.getElementById("userInfo").textContent = "";
-  document.getElementById("pasteList").innerHTML = "";
+  document.getElementById("userTexts").innerHTML = "";
 }
 
-async function loadUserInfo() {
+async function loadUserData() {
   try {
     const email = await getUserEmail();
     const response = await sendMessage({
@@ -97,90 +96,42 @@ async function loadUserInfo() {
     });
 
     if (!response.success) {
-      throw new Error(response.error || "Failed to fetch user info");
+      throw new Error(response.error || "Failed to fetch user data");
     }
 
-    document.getElementById("userInfo").textContent =
-      `Signed in as ${response.data.user.name}`;
+    const userData = response.data.user;
+    displayUserInfo(userData);
+    displayUserTexts(userData.texts);
   } catch (error) {
-    console.error("Error loading user info:", error);
-    document.getElementById("userInfo").textContent = "Error loading user info";
+    console.error("Error loading user data:", error);
+    document.getElementById("userInfo").textContent = "Error loading user data";
   }
 }
 
-async function loadRecentPastes() {
-  try {
-    const response = await sendMessage({
-      action: "apiRequest",
-      method: "GET",
-      endpoint: "/texts",
-    });
-
-    if (!response.success) {
-      throw new Error(response.error || "Failed to fetch recent pastes");
-    }
-
-    displayRecentPastes(response.data.texts);
-  } catch (error) {
-    console.error("Error loading recent pastes:", error);
-    displayMessage("Error loading recent pastes. Please try again.");
-  }
+function displayUserInfo(userData) {
+  document.getElementById("userInfo").textContent =
+    `Signed in as ${userData.name}`;
 }
 
-function displayRecentPastes(pastes) {
-  const pasteList = document.getElementById("pasteList");
-  pasteList.innerHTML = "";
+function displayUserTexts(texts) {
+  const textList = document.getElementById("userTexts");
+  textList.innerHTML = "<h2>Your Texts</h2>";
 
-  if (pastes && pastes.length > 0) {
-    pastes.slice(0, 5).forEach((paste) => {
+  if (texts && texts.length > 0) {
+    const ul = document.createElement("ul");
+    texts.forEach((text) => {
       const li = document.createElement("li");
       const a = document.createElement("a");
-      a.href = `https://textbin.theenthusiast.dev/${paste.slug}`;
-      a.textContent = paste.title || "Untitled";
+      a.href = `${WEB_APP_URL}/${text.slug}`;
+      a.textContent = text.title || "Untitled";
       a.target = "_blank";
       li.appendChild(a);
-      pasteList.appendChild(li);
+      ul.appendChild(li);
     });
+    textList.appendChild(ul);
   } else {
-    displayMessage("No recent pastes found.");
+    textList.innerHTML += "<p>No texts found.</p>";
   }
-}
-
-function displayMessage(message) {
-  const pasteList = document.getElementById("pasteList");
-  pasteList.innerHTML = `<p>${message}</p>`;
-}
-
-async function getAuthToken() {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(["authToken"], function (result) {
-      resolve(result.authToken);
-    });
-  });
-}
-
-async function setAuthToken(token) {
-  return new Promise((resolve) => {
-    chrome.storage.local.set({ authToken: token }, resolve);
-  });
-}
-
-async function getUserEmail() {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(["userEmail"], function (result) {
-      resolve(result.userEmail);
-    });
-  });
-}
-
-function viewProfile() {
-  chrome.tabs.create({ url: "https://textbin.theenthusiast.dev/profile" });
-}
-
-function toggleTheme() {
-  document.body.classList.toggle("dark-theme");
-  const isDarkTheme = document.body.classList.contains("dark-theme");
-  chrome.storage.local.set({ darkTheme: isDarkTheme });
 }
 
 async function handleNewPaste(e) {
@@ -213,7 +164,7 @@ async function handleNewPaste(e) {
       method: "POST",
       endpoint: "/texts",
       data: {
-        title: title, // Title is not encrypted
+        title: title,
         content: encryptedContent,
         format: format,
         expiresValue: parseInt(expiryValue),
@@ -230,82 +181,99 @@ async function handleNewPaste(e) {
     alert("Paste created successfully!");
     document.getElementById("pasteForm").reset();
     showMainContent();
-    loadRecentPastes();
+    loadUserData();
   } catch (error) {
     console.error("Error creating paste:", error);
     alert("Error creating paste. Please try again.");
   }
 }
 
-function displayRecentPastes(pastes) {
-  const pasteList = document.getElementById("pasteList");
-  pasteList.innerHTML = "";
+async function getAuthToken() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(["authToken"], function (result) {
+      resolve(result.authToken);
+    });
+  });
+}
 
-  if (pastes && pastes.length > 0) {
-    pastes.slice(0, 5).forEach((paste) => {
+async function setAuthToken(token) {
+  return new Promise((resolve) => {
+    chrome.storage.local.set({ authToken: token }, resolve);
+  });
+}
+
+async function getUserEmail() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(["userEmail"], function (result) {
+      resolve(result.userEmail);
+    });
+  });
+}
+
+async function setUserEmail(email) {
+  return new Promise((resolve) => {
+    chrome.storage.local.set({ userEmail: email }, resolve);
+  });
+}
+
+function toggleTheme() {
+  document.body.classList.toggle("dark-theme");
+  const isDarkTheme = document.body.classList.contains("dark-theme");
+  chrome.storage.local.set({ darkTheme: isDarkTheme });
+  updateThemeButtonText();
+}
+
+function updateThemeButtonText() {
+  const toggleThemeBtn = document.getElementById("toggleThemeBtn");
+  const isDarkTheme = document.body.classList.contains("dark-theme");
+  toggleThemeBtn.textContent = isDarkTheme ? "Light Theme" : "Dark Theme";
+}
+
+function loadThemePreference() {
+  chrome.storage.local.get(["darkTheme"], function (result) {
+    if (result.darkTheme) {
+      document.body.classList.add("dark-theme");
+    }
+    updateThemeButtonText();
+  });
+}
+
+function displayUserTexts(texts) {
+  const textList = document.getElementById("userTexts");
+  textList.innerHTML = "<h2>Your Texts</h2>";
+
+  if (texts && texts.length > 0) {
+    const ul = document.createElement("ul");
+    texts.forEach((text) => {
       const li = document.createElement("li");
       const a = document.createElement("a");
-      a.href = "#";
-      a.textContent = paste.title || "Untitled";
-      a.onclick = (e) => {
-        e.preventDefault();
-        showPasteDetails(paste);
-      };
+      a.href = `${WEB_APP_URL}/${text.slug}`;
+      a.textContent = text.title || "Untitled";
+      a.target = "_blank";
       li.appendChild(a);
-      pasteList.appendChild(li);
+
+      const details = document.createElement("p");
+      details.textContent = `Format: ${text.format} | Expires: ${new Date(text.expires).toLocaleDateString()}`;
+      details.className = "text-details";
+      li.appendChild(details);
+
+      ul.appendChild(li);
     });
+    textList.appendChild(ul);
   } else {
-    displayMessage("No recent pastes found.");
+    textList.innerHTML += "<p>No texts found.</p>";
   }
 }
-
-function showPasteDetails(paste) {
-  const detailsSection = document.createElement("div");
-  detailsSection.innerHTML = `
-    <h2>${paste.title}</h2>
-    <p>Format: ${paste.format}</p>
-    <p>Expires: ${new Date(paste.expires).toLocaleString()}</p>
-    <div id="encryptedContent">
-      <p>This content is encrypted. Enter the password to decrypt:</p>
-      <input type="password" id="decryptionPassword" placeholder="Decryption Password">
-      <button id="decryptButton">Decrypt</button>
-    </div>
-    <pre id="decryptedContent" style="display: none;"></pre>
-  `;
-
-  const mainContent = document.getElementById("mainContent");
-  mainContent.innerHTML = "";
-  mainContent.appendChild(detailsSection);
-
-  const decryptButton = document.getElementById("decryptButton");
-  decryptButton.addEventListener("click", () => decryptPaste(paste));
-}
-
-async function decryptPaste(paste) {
-  const password = document.getElementById("decryptionPassword").value;
-  if (!password) {
-    alert("Please enter the decryption password");
-    return;
-  }
-
-  try {
-    const salt = Uint8Array.from(atob(paste.encryption_salt), (c) =>
-      c.charCodeAt(0),
-    );
-    const key = await generateKey(password, salt);
-    const decryptedContent = await decryptText(paste.content, key);
-
-    const decryptedContentElement = document.getElementById("decryptedContent");
-    decryptedContentElement.textContent = decryptedContent;
-    decryptedContentElement.style.display = "block";
-
-    document.getElementById("encryptedContent").style.display = "none";
-  } catch (error) {
-    console.error("Decryption error:", error);
-    alert(
-      "Failed to decrypt the content. Please check your password and try again.",
-    );
-  }
+function sendMessage(message) {
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage(message, (response) => {
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message));
+      } else {
+        resolve(response);
+      }
+    });
+  });
 }
 
 function generateSalt() {
@@ -357,43 +325,4 @@ async function encryptText(text, key) {
   resultArray.set(encryptedArray, iv.length);
 
   return btoa(String.fromCharCode.apply(null, Array.from(resultArray)));
-}
-
-async function decryptText(encryptedText, key) {
-  const encryptedData = new Uint8Array(
-    atob(encryptedText)
-      .split("")
-      .map((char) => char.charCodeAt(0)),
-  );
-  const iv = encryptedData.slice(0, 12);
-  const data = encryptedData.slice(12);
-
-  const decryptedData = await window.crypto.subtle.decrypt(
-    { name: "AES-GCM", iv: iv },
-    key,
-    data,
-  );
-
-  const decoder = new TextDecoder();
-  return decoder.decode(decryptedData);
-}
-
-function loadThemePreference() {
-  chrome.storage.local.get(["darkTheme"], function (result) {
-    if (result.darkTheme) {
-      document.body.classList.add("dark-theme");
-    }
-  });
-}
-
-function sendMessage(message) {
-  return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage(message, (response) => {
-      if (chrome.runtime.lastError) {
-        reject(new Error(chrome.runtime.lastError.message));
-      } else {
-        resolve(response);
-      }
-    });
-  });
 }
