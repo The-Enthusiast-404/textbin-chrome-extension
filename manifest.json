@@ -4,10 +4,7 @@
   "version": "1.0",
   "description": "Quick access to TextBin features",
   "permissions": ["storage"],
-  "host_permissions": [
-    "https://textbin.theenthusiast.dev/*",
-    "http://app.textbin.theenthusiast.dev/*"
-  ],
+  "host_permissions": ["https://textbin.theenthusiast.dev/*"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
