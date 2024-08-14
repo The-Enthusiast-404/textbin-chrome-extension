@@ -3,7 +3,7 @@
   "name": "TextBin Extension",
   "version": "1.0",
   "description": "Quick access to TextBin features",
-  "permissions": ["storage", "activeTab", "tabs"],
+  "permissions": ["storage"],
   "host_permissions": [
     "https://textbin.theenthusiast.dev/*",
     "http://app.textbin.theenthusiast.dev/*"
