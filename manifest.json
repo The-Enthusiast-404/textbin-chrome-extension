@@ -1,22 +1,22 @@
 {
   "manifest_version": 3,
   "name": "TextBin Extension",
-  "version": "1.0",
+  "version": "1.1",
   "description": "Quick access to TextBin features",
   "permissions": ["storage"],
   "host_permissions": ["https://textbin.theenthusiast.dev/*"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "images/textbin-icon-16.svg",
-      "48": "images/textbin-icon-32.svg",
-      "128": "images/textbin-icon-128.svg"
+      "16": "images/textbin-icon-16.png",
+      "48": "images/textbin-icon-32.png",
+      "128": "images/textbin-icon-128.png"
     }
   },
   "icons": {
-    "16": "images/textbin-icon-16.svg",
-    "48": "images/textbin-icon-32.svg",
-    "128": "images/textbin-icon-128.svg"
+    "16": "images/textbin-icon-16.png",
+    "48": "images/textbin-icon-32.png",
+    "128": "images/textbin-icon-128.png"
   },
   "background": {
     "service_worker": "background.js"
